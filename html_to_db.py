@@ -1,5 +1,6 @@
 import mysql.connector
 
+
 country_list = ['Brazil', 'Spain', 'Italy']
 
 word_list = open("html_data/" + country_list[0] + ".txt").read().split()
