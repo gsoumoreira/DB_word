@@ -1,5 +1,6 @@
-import pycurl
-from io import BytesIO
+# import pycurl
+import httplib2
+# from io import BytesIO
 import re
 
 # b_obj = BytesIO()
@@ -101,8 +102,8 @@ url_list = [('http://www.thehypertexts.com/The%20Best%20Long%20Poems%20of%20All%
             ('http://www.thehypertexts.com/Best%20Animal%20Poems.htm', 'Animal'),
             ('http://www.thehypertexts.com/Fadwa%20Tuqan%20Palestinian%20Poet%20Poetry%20Picture%20Bio.htm', 'Fadwa'),
             ('http://www.thehypertexts.com/The%20Best%20of%20The%20HyperTexts.htm', 'Hyper'),
-            ('http://www.thehypertexts.com/Current_and_Back_Issues.htm', 'Issues'),'Issue']
-
+            ('http://www.thehypertexts.com/Current_and_Back_Issues.htm', 'Issues'),
+            ]
 
 # Cleaning the HTML using regular expression
 def cleanhtml(raw_html):
@@ -115,32 +116,43 @@ n_words = 0
 
 for url, name in url_list:
 
-    b_obj = BytesIO()
-    crl = pycurl.Curl()
-
-    # Set URL value
-    crl.setopt(crl.URL, url)
-
-    # Write bytes that are utf-8 encoded
-    crl.setopt(crl.WRITEDATA, b_obj)
-
-    # Perform a file transfer
-    crl.perform()
-
-    # End curl session
-    crl.close()
-
-    # Get the content stored in the BytesIO object (in byte characters)
-    get_body = b_obj.getvalue()
-
-    word_list = str.split(cleanhtml(get_body))
-    n_words += len(word_list)
+    h = httplib2.Http(".cache")
+    (resp_headers, content) = h.request(url, "GET")
+    clean_text = cleanhtml(str(content))
 
     with open("html_data/"+name+".txt", "w") as output:
-        output.write(str(word_list))
+        output.write(clean_text)
 
 
-print(n_words)
-# with open("html_data/"+country+".txt", "w") as output:
-#     for row in word_list:
-#         output.write(str(row) + '\n')
+# SCIPT using pycurl:
+
+# for url, name in url_list:
+#
+#     b_obj = BytesIO()
+#     crl = pycurl.Curl()
+#
+#     # Set URL value
+#     crl.setopt(crl.URL, url)
+#
+#     # Write bytes that are utf-8 encoded
+#     crl.setopt(crl.WRITEDATA, b_obj)
+#
+#     # Perform a file transfer
+#     crl.perform()
+#
+#     # End curl session
+#     crl.close()
+#
+#     # Get the content stored in the BytesIO object (in byte characters)
+#     get_body = b_obj.getvalue()
+#
+#     print('Output of GET request:\n%s' % get_body.decode('utf8'))
+#     # word_list = str.split(cleanhtml(get_body))
+#     # word_list = cleanhtml(word_decoded)
+#
+#     # word_decoded = word_list.decode('utf8')
+#     # n_words += len(word_list)
+#     # print(str(word_list))
+#
+#     # with open("html_data/"+name+".txt", "w") as output:
+#     #     output.write(str(word_list))
