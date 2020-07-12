@@ -1,9 +1,28 @@
 import mysql.connector
 
+with open('html_data/test.txt', 'r') as var:
+    for line in var:
+        li = line
 
-country_list = ['Brazil', 'Spain', 'Italy']
+# Making some cleaning in the text file
+li1 = li.replace('\\n','')
+li2 = li1.replace('\\r','')
+li3 = li2.replace('\r','')
+li4 = li3.replace('\n','')
+li5 = li4.replace('\\','')
+li6 = li5.replace(')','')
+li7 = li6.replace('(','')
+li8 = li7.replace(']','')
+li9 = li8.replace('[','')
+li10 = li9.replace(',','')
+li11 = li10.replace('.','')
+li12 = li11.replace(':','')
 
-word_list = open("html_data/" + country_list[0] + ".txt").read().split()
+li_final = list(li12.split(' '))
+
+new_list = []
+for i in li_final:
+    new_list.append((i,))
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -12,32 +31,11 @@ mydb = mysql.connector.connect(
   database="db_word"
 )
 
-# TABLES = {}
-# TABLES['collect_word'] = (
-#     "CREATE TABLE `word3` ("
-#     "  `ID` int(11) NOT NULL AUTO_INCREMENT,"
-#     "  `word` varchar(50) NOT NULL,"
-#     "  PRIMARY KEY (`ID`)"
-#     ") ENGINE=InnoDB")
-
-# cursor.execute(TABLES['collect_word'])
-
 cursor = mydb.cursor()
 
-for word in word_list:
+# Use execute many to insert many lines
+stmt = "INSERT INTO exe3 (Word) VALUES (%s)"
+cursor.executemany(stmt, new_list)
 
-    ID_word = cursor.lastrowid
-    print(ID_word)
-    insert = ("INSERT INTO word3 (ID, word) VALUES (%s, %s)")
-    data = (word)
-    cursor.execute(insert, data)
-    mydb.commit()
-# cursor.execute("INSERT INTO word (word) VALUES (%s)", ('test'))
-
-# for word in words:
-#     ID_word = cursor.lastrowid
-#     cursor.execute("INSERT INTO word VALUES (ID_word, word)")
-
-# mydb.commit()
-
-cursor.close()
+mydb.commit()
+mydb.close()
